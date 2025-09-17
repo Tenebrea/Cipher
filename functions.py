@@ -1,3 +1,5 @@
+import base64
+
 def caesars_cipher(line:str, step:int, decipher = False)->str:
     keys_numbers = {
     1: "А",  2: "Б",  3: "В",  4: "Г",  5: "Д",  6: "Е",
@@ -30,54 +32,49 @@ def caesars_cipher(line:str, step:int, decipher = False)->str:
             ans+=i
     return ans
 
-def base64_cipher(line:str)->str:
-    def binaryTodecimal(n):
-        decimal = 0
-        power = 1
-        while n>0:
-            rem = n%10
-            n = n//10
-            decimal += rem*power
-            power = power*2
-            
-        return decimal
-    
-    base64 = {
-     0: "A",  1: "B",  2: "C",  3: "D",  4: "E",  5: "F",
-     6: "G",  7: "H",  8: "I",  9: "J", 10: "K", 11: "L",
-    12: "M", 13: "N", 14: "O", 15: "P", 16: "Q", 17: "R",
-    18: "S", 19: "T", 20: "U", 21: "V", 22: "W", 23: "X",
-    24: "Y", 25: "Z",
-    26: "a", 27: "b", 28: "c", 29: "d", 30: "e", 31: "f",
-    32: "g", 33: "h", 34: "i", 35: "j", 36: "k", 37: "l",
-    38: "m", 39: "n", 40: "o", 41: "p", 42: "q", 43: "r",
-    44: "s", 45: "t", 46: "u", 47: "v", 48: "w", 49: "x",
-    50: "y", 51: "z",
-    52: "0", 53: "1", 54: "2", 55: "3", 56: "4", 57: "5",
-    58: "6", 59: "7", 60: "8", 61: "9",
-    62: "+", 63: "/"
-}
-    ans = ""
-    to_convert = ""
-    for i in line:
-        if i in base64.values():
-           to_convert+=str(bin(ord(i))) 
-        else:
-            return "Нельзя конвертировать в base64"
-    to_convert=to_convert.replace("b","")
-    if len(to_convert)%6==0:
-        for i in range(0,len(line)):
-            ans+=base64[binaryTodecimal(int(to_convert[i:i+5]))]
+def base64_encoder(line:str, encode = True)->str:    
+    if encode:
+        try:
+            return base64.b64encode(line.encode("ascii")).decode("ascii")
+        except:
+            return "Это не Base64"
     else:
-        to_convert+=len(to_convert)%6*"0"
-        for i in range(0,len(line)):
-            ans+=base64[binaryTodecimal(int(to_convert[i:i+5]))]
-    return ans
-
-print(base64_cipher('Logto'))
-
+        try:
+            return base64.b64decode(line.encode("ascii")).decode("ascii")
+        except:
+            return "Это не Base64"
+        
 
 
+def verman_cipher(line:str, key:str, encode = True)->str:
+    if len(line) > len(key):
+        key+="o"*(len(line)-len(key))
+    return ''.join(chr(ord(p) ^ ord(k)) for p, k in zip(line, key))
 
-
+         
+def vigenere_cipher(line:str, key:str, encode = True)->str:    
+    key = key*(len(line)//len(key)) + key[:len(line)%len(key)]
+    text = []
+    if encode:
+        for i in range(len(line)):
+            char = line[i]
+            if char.isupper() and char != "Ё":
+                encrypted_char = chr((ord(char) + ord(key[i]) - 2 * ord('А')) % 32 + ord('А'))
+            elif char.islower() and char != "ё":
+                encrypted_char = chr((ord(char) + ord(key[i]) - 2 * ord('а')) % 32 + ord('а'))
+            else:
+                encrypted_char = char
+            text.append(encrypted_char)
+        return "".join(text)
+    else:
+        for i in range(len(line)):
+            char = line[i]
+            if char.isupper() and char != "Ё":
+                decrypted_char = chr((ord(char) - ord(key[i]) + 32) % 32 + ord('А'))
+            elif char.islower() and char != "ё":
+                decrypted_char = chr((ord(char) - ord(key[i]) + 32) % 32 + ord('а'))
+            else:
+                decrypted_char = char
+            text.append(decrypted_char)
+        return "".join(text)
 
