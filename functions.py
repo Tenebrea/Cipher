@@ -1,7 +1,7 @@
 import base64
 
 
-def caesars_cipher(line: str, step: int, decipher=False) -> str:
+def caesars_cipher(line: str, step: int, encrypt=True) -> str:
     keys_numbers = {
         1: "А",  2: "Б",  3: "В",  4: "Г",  5: "Д",  6: "Е",
         7: "Ё",  8: "Ж",  9: "З", 10: "И", 11: "Й", 12: "К",
@@ -20,7 +20,7 @@ def caesars_cipher(line: str, step: int, decipher=False) -> str:
     }
     ans = ""
     step %= 33
-    if decipher == True:
+    if encrypt == False:
         step = -step
 
     for i in line:
@@ -34,8 +34,8 @@ def caesars_cipher(line: str, step: int, decipher=False) -> str:
     return ans
 
 
-def base64_encoder(line: str, encode=True) -> str:
-    if encode:
+def base64_encoder(line: str, encrypt=True) -> str:
+    if encrypt:
         try:
             return base64.b64encode(line.encode("ascii")).decode("ascii")
         except:
@@ -47,16 +47,16 @@ def base64_encoder(line: str, encode=True) -> str:
             return "Это не Base64"
 
 
-def verman_cipher(line: str, key: str, encode=True) -> str:
+def verman_cipher(line: str, key: str) -> str:
     if len(line) > len(key):
         key += "o"*(len(line)-len(key))
     return ''.join(chr(ord(p) ^ ord(k)) for p, k in zip(line, key))
 
 
-def vigenere_cipher(line: str, key: str, encode=True) -> str:
+def vigenere_cipher(line: str, key: str, encrypt=True) -> str:
     key = key*(len(line)//len(key)) + key[:len(line) % len(key)]
     text = []
-    if encode:
+    if encrypt:
         for i in range(len(line)):
             char = line[i]
             if char.isupper() and char != "Ё":
