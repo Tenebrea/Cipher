@@ -39,6 +39,7 @@ class MainWindow(QMainWindow):
         self.base64_layout()
         self.verman_layout()
 
+        self.create_language_changer()
         self.create_toolbar()
         self.create_encryption()
 
@@ -109,19 +110,46 @@ class MainWindow(QMainWindow):
 
         self.stack_layout.addWidget(self.base64_widget)
 
+    def verman_layout(self):
+        self.verman_widget = QWidget(self)
+
+        self.text_verman = QLabel(self.verman_widget)
+        self.text_verman.setText("Текст:")
+        self.text_verman.move(10, 10)
+
+        self.input_text_verman = QPushButton(self.verman_widget)
+        self.input_text_verman.setFixedWidth(80)
+        self.input_text_verman.setText("Выбрать")
+        self.input_text_verman.move(50, 10)
+        self.input_text_verman.clicked.connect(self.get_text)
+
+        self.key_verman = QLabel(self.verman_widget)
+        self.key_verman.setText("Ключ:")
+        self.key_verman.move(10, 50)
+
+        self.input_key_verman = QPushButton(self.verman_widget)
+        self.input_key_verman.setFixedWidth(80)
+        self.input_key_verman.setText("Выбрать")
+        self.input_key_verman.move(50, 50)
+        self.input_key_verman.clicked.connect(self.get_key)
+
+        self.stack_layout.addWidget(self.verman_widget)
+
     def create_toolbar(self):
         self.tool_bar = QToolBar("Main panel")
-        self.addToolBar(self.tool_bar)
+
         self.tool_bar.setMovable(False)
 
         menu = self.menuBar()
 
+        # Action groups for file input and encryption algorithms
         self.action_group = QActionGroup(self)
         self.action_group.setExclusive(True)
 
         self.getting_of_file = QActionGroup(self)
         self.getting_of_file.setExclusive(True)
 
+        # Actions for getting text
         get_from_file = QAction("Из файла")
         get_from_file.setStatusTip("Вводить текст и ключ из файла")
         get_from_file.setCheckable(True)
@@ -133,6 +161,7 @@ class MainWindow(QMainWindow):
         get_from_entries.setCheckable(True)
         get_from_entries.triggered.connect(self.change_getting)
 
+        # Actions for encryption algorithms
         action1 = QAction("Vigenere", self)
         action1.setCheckable(True)
         action1.setChecked(True)
@@ -150,6 +179,7 @@ class MainWindow(QMainWindow):
         action4.setCheckable(True)
         action4.triggered.connect(self.change_layout)
 
+        # Add actions to their respective groups
         self.getting_of_file.addAction(get_from_entries)
         self.getting_of_file.addAction(get_from_file)
 
@@ -158,14 +188,23 @@ class MainWindow(QMainWindow):
         self.action_group.addAction(action4)
         self.action_group.addAction(action3)
 
+        # Add actions to the toolbar
         self.tool_bar.addAction(action1)
         self.tool_bar.addAction(action2)
         self.tool_bar.addAction(action4)
         self.tool_bar.addAction(action3)
 
+        # Create the "File" menu
         file_menu = menu.addMenu("File")
         file_menu.addAction(get_from_entries)
         file_menu.addAction(get_from_file)
+
+        # Create the "Algorithms" menu
+        algorithms_menu = menu.addMenu("Algorithms")
+        algorithms_menu.addAction(action1)
+        algorithms_menu.addAction(action2)
+        algorithms_menu.addAction(action3)
+        algorithms_menu.addAction(action4)
 
     def create_encryption(self):
         self.encrypt = QRadioButton("Зашифровать", self)
@@ -188,19 +227,19 @@ class MainWindow(QMainWindow):
         self.get_result.clicked.connect(self.encrypt_text)
 
     def create_language_changer(self):
-        self.russian = QRadioButton("Зашифровать", self)
-        self.russian.move(10, 150)
+        self.russian = QRadioButton("Английский", self)
+        self.russian.move(10, 120)
         self.russian.setChecked(True)
-        self.russian.clicked.connect(self.change_encrypt)
+        self.russian.clicked.connect(self.change_language)
 
-        self.english = QRadioButton("Расшифровать", self)
-        self.english.move(120, 150)
-        self.english.clicked.connect(self.change_encrypt)
+        self.english = QRadioButton("Русский", self)
+        self.english.move(120, 120)
+        self.english.clicked.connect(self.change_language)
 
-        self.encrypt_radio_button = QButtonGroup(self)
+        self.language_radio_button = QButtonGroup(self)
 
-        self.encrypt_radio_button.addButton(self.encrypt)
-        self.encrypt_radio_button.addButton(self.decrypt)
+        self.language_radio_button.addButton(self.russian)
+        self.language_radio_button.addButton(self.english)
 
         self.get_result = QPushButton(self)
         self.get_result.setText("Получить")
@@ -216,7 +255,7 @@ class MainWindow(QMainWindow):
 
     def change_language(self):
         selected_button = self.encrypt_radio_button.checkedButton()
-        if selected_button.text() == "Зашифровать":
+        if selected_button.text() == "Английский":
             self.encrypt_state = True
         else:
             self.encrypt_state = False
