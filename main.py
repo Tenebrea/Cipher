@@ -109,31 +109,6 @@ class MainWindow(QMainWindow):
 
         self.stack_layout.addWidget(self.base64_widget)
 
-    def verman_layout(self):
-        self.verman_widget = QWidget(self)
-
-        self.text_verman = QLabel(self.verman_widget)
-        self.text_verman.setText("Текст:")
-        self.text_verman.move(10, 10)
-
-        self.input_text_verman = QPushButton(self.verman_widget)
-        self.input_text_verman.setFixedWidth(80)
-        self.input_text_verman.setText("Выбрать")
-        self.input_text_verman.move(50, 10)
-        self.input_text_verman.clicked.connect(self.get_text)
-
-        self.key_verman = QLabel(self.verman_widget)
-        self.key_verman.setText("Ключ:")
-        self.key_verman.move(10, 50)
-
-        self.input_key_verman = QPushButton(self.verman_widget)
-        self.input_key_verman.setFixedWidth(80)
-        self.input_key_verman.setText("Выбрать")
-        self.input_key_verman.move(50, 50)
-        self.input_key_verman.clicked.connect(self.get_key)
-
-        self.stack_layout.addWidget(self.verman_widget)
-
     def create_toolbar(self):
         self.tool_bar = QToolBar("Main panel")
         self.addToolBar(self.tool_bar)
