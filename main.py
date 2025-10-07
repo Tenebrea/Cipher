@@ -10,7 +10,7 @@ class MainWindow(QMainWindow):
 
         self.encrypt_state = True
         self.getting_from_file = True
-        self.russian = False
+        self.eng = True
         self.cipher = "vigenere"
         self.text = ""
         self.key = ""
@@ -212,7 +212,34 @@ class MainWindow(QMainWindow):
         self.get_result.move(10, 180)
         self.get_result.clicked.connect(self.encrypt_text)
 
+    def create_language_changer(self):
+        self.russian = QRadioButton("Зашифровать", self)
+        self.russian.move(10, 150)
+        self.russian.setChecked(True)
+        self.russian.clicked.connect(self.change_encrypt)
+
+        self.english = QRadioButton("Расшифровать", self)
+        self.english.move(120, 150)
+        self.english.clicked.connect(self.change_encrypt)
+
+        self.encrypt_radio_button = QButtonGroup(self)
+
+        self.encrypt_radio_button.addButton(self.encrypt)
+        self.encrypt_radio_button.addButton(self.decrypt)
+
+        self.get_result = QPushButton(self)
+        self.get_result.setText("Получить")
+        self.get_result.move(10, 180)
+        self.get_result.clicked.connect(self.encrypt_text)
+
     def change_encrypt(self):
+        selected_button = self.encrypt_radio_button.checkedButton()
+        if selected_button.text() == "Зашифровать":
+            self.encrypt_state = True
+        else:
+            self.encrypt_state = False
+
+    def change_language(self):
         selected_button = self.encrypt_radio_button.checkedButton()
         if selected_button.text() == "Зашифровать":
             self.encrypt_state = True
