@@ -1,7 +1,7 @@
 import base64
 
 
-def caesars_cipher(line: str, step: int, encrypt=True) -> str:
+def ru_caesars_cipher(line: str, step: int, encrypt=True) -> str:
     keys_numbers = {
         1: "А",  2: "Б",  3: "В",  4: "Г",  5: "Д",  6: "Е",
         7: "Ё",  8: "Ж",  9: "З", 10: "И", 11: "Й", 12: "К",
@@ -40,7 +40,7 @@ def verman_cipher(line: str, key: str) -> str:
     return ''.join(chr(ord(p) ^ ord(k)) for p, k in zip(line, key))
 
 
-def vigenere_cipher(line: str, key: str, encrypt=True) -> str:
+def ru_vigenere_cipher(line: str, key: str, encrypt=True) -> str:
     key = key*(len(line)//len(key)) + key[:len(line) % len(key)]
     text = []
     if encrypt:
