@@ -1,73 +1,57 @@
-from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtGui import QAction, QIcon, QKeySequence
-from PyQt6.QtWidgets import (
-    QApplication,
-    QCheckBox,
-    QLabel,
-    QMainWindow,
-    QStatusBar,
-    QToolBar,
-)
+import pytest
+from functions import base64_encoder, verman_cipher, ru_vigenere_cipher, ru_caesars_cipher, eng_caesars_cipher, eng_vigenere_cipher
+
+@pytest.mark.parametrize("text, key, mode, result", [
+    ("Пиво", 0, True, "Пиво"),
+    ("Пиво", 3, True, "Тлес"),
+    ("Пиво", -3, True, "Мёял"),
+    ("Alban", -3, True, "Alban"),
+    ("Пиво", 0, False, "Пиво"),
+    ("Тлес", 3, False, "Пиво"),
+    ("Мёял", -3, False, "Пиво"),
+    ("Alban", -3, False, "Alban")
+])
+def test_caesar_ru(text, key, mode, result):
+    assert ru_caesars_cipher(text, key, mode) == result
+    
+@pytest.mark.parametrize("text, key, mode, result", [
+    ("Beer", 0, True, "Beer"),
+    ("Beerz", 3, True, "Ehhuc"),
+    ("Beer", -3, True, "Ybbo"),
+    ("Пиво", -3, True, "Пиво"),
+    ("Beer", 0, False, "Beer"),
+    ("Beer", 3, False, "Ybbo"),
+    ("Beerz", -3, False, "Ehhuc"),
+    ("Пиво", -3, False, "Пиво")
+])
+def test_caesar_eng(text, key, mode, result):
+    assert eng_caesars_cipher(text, key, mode) == result
+    
+
+@pytest.mark.parametrize("text, mode, result", [
+    ("вавымфс", True, "Это не Base64"),
+    ("Beer", True, "QmVlcg=="),
+    ("", True, ""),
+    ("0LLQsNCy0YvQvNGE0YE=", False, "Это не Base64"),
+    ("QmVlcg==", False, "Beer"),
+    ("", False, "")
+])
+def test_base64(text, mode, result):
+    assert base64_encoder(text, mode) == result
+    
+@pytest.mark.parametrize("text, key, mode, result", [
+    ("Пиво", "Балаган", True, "Рино"),
+    ("Пиво", "", True, ""),
+    ("Рино", "Балаган", False, "Пиво")
+])
+def test_vigenere_ru(text, key, mode, result):
+    assert ru_vigenere_cipher(text, key, mode) == result
 
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("My App")
-
-        label = QLabel("Hello!")
-
-        # The `Qt` namespace has a lot of attributes to customize
-        # widgets. See: http://doc.qt.io/qt-6/qt.html
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        # Set the central widget of the Window. Widget will expand
-        # to take up all the space in the window by default.
-        self.setCentralWidget(label)
-
-        toolbar = QToolBar("My main toolbar")
-        toolbar.setIconSize(QSize(16, 16))
-        self.addToolBar(toolbar)
-
-        button_action = QAction(QIcon("bug.png"), "&Your button", self)
-        button_action.setStatusTip("This is your button")
-        button_action.triggered.connect(self.toolbar_button_clicked)
-        button_action.setCheckable(True)
-        # You can enter keyboard shortcuts using key names (e.g. Ctrl+p)
-        # Qt.namespace identifiers (e.g. Qt.CTRL + Qt.Key_P)
-        # or system agnostic identifiers (e.g. QKeySequence.Print)
-        button_action.setShortcut(QKeySequence("Ctrl+p"))
-        toolbar.addAction(button_action)
-
-        toolbar.addSeparator()
-
-        button_action2 = QAction(QIcon("bug.png"), "Your &button2", self)
-        button_action2.setStatusTip("This is your button2")
-        button_action2.triggered.connect(self.toolbar_button_clicked)
-        button_action2.setCheckable(True)
-        toolbar.addAction(button_action2)
-
-        toolbar.addWidget(QLabel("Hello"))
-        toolbar.addWidget(QCheckBox())
-
-        self.setStatusBar(QStatusBar(self))
-
-        menu = self.menuBar()
-
-        file_menu = menu.addMenu("&File")
-        file_menu.addAction(button_action)
-
-        file_menu.addSeparator()
-
-        file_submenu = file_menu.addMenu("Submenu")
-
-        file_submenu.addAction(button_action2)
-
-    def toolbar_button_clicked(self, s):
-        print("click", s)
-
-
-app = QApplication([])
-window = MainWindow()
-window.show()
-app.exec()
+@pytest.mark.parametrize("text, key, mode, result", [
+    ("Beer", "cryptii", True, "Jvcg"),
+    ("Beer", "", True, ""),
+    ("Jvcg", "cryptii", False, "Beer")
+])
+def test_vigenere_eng(text, key, mode, result):
+    assert eng_vigenere_cipher(text, key, mode) == result

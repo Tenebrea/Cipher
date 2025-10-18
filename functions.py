@@ -1,15 +1,15 @@
 import base64
 
 
-def ru_caesars_cipher(line: str, step: int, encrypt=True) -> str:
-    keys_numbers = {
-        1: "А",  2: "Б",  3: "В",  4: "Г",  5: "Д",  6: "Е",
-        7: "Ё",  8: "Ж",  9: "З", 10: "И", 11: "Й", 12: "К",
-        13: "Л", 14: "М", 15: "Н", 16: "О", 17: "П", 18: "Р",
-        19: "С", 20: "Т", 21: "У", 22: "Ф", 23: "Х", 24: "Ц",
-        25: "Ч", 26: "Ш", 27: "Щ", 28: "Ъ", 29: "Ы", 30: "Ь",
-        31: "Э", 32: "Ю", 33: "Я"
-    }
+def ru_caesars_cipher(line: str, key: int, encrypt=True) -> str:
+    keys_numbers = [
+        "А", "Б", "В", "Г", "Д", "Е",
+        "Ё", "Ж", "З", "И", "Й", "К",
+        "Л", "М", "Н", "О", "П", "Р",
+        "С", "Т", "У", "Ф", "Х", "Ц",
+        "Ч", "Ш", "Щ", "Ъ", "Ы", "Ь",
+        "Э", "Ю", "Я"
+    ]
     keys_letters = {
         "А": 1,  "Б": 2,  "В": 3,  "Г": 4,  "Д": 5,  "Е": 6,
         "Ё": 7,  "Ж": 8,  "З": 9,  "И": 10, "Й": 11, "К": 12,
@@ -19,30 +19,50 @@ def ru_caesars_cipher(line: str, step: int, encrypt=True) -> str:
         "Э": 31, "Ю": 32, "Я": 33
     }
     ans = ""
-    step %= 33
+
     if encrypt == False:
-        step = -step
+        key = -key
+
+    if key < 0:
+        key = -(-key % 33)
+    else:
+        key %= 33
 
     for i in line:
-        if i.upper() in keys_numbers.values():
-            if i.isupper():
-                ans += keys_numbers[keys_letters[i]+step]
+        if i.upper() in keys_letters.keys():
+            if keys_letters[i.upper()]+key-1 > 33:
+                local_key = (keys_letters[i.upper()]+key-1) % 33
             else:
-                ans += keys_numbers[keys_letters[i.upper()]+step].lower()
+                local_key = keys_letters[i.upper()]+key-1
+
+            if i.isupper():
+                ans += keys_numbers[local_key]
+            else:
+                ans += keys_numbers[local_key].lower()
         else:
             ans += i
     return ans
 
 
 def verman_cipher(line: str, key: str) -> str:
-    if len(line) > len(key):
-        key += "o"*(len(line)-len(key))
-    return ''.join(chr(ord(p) ^ ord(k)) for p, k in zip(line, key))
+    line_bytes = line.encode('utf-8')
+    key_bytes = key.encode('utf-8')
+
+    key_bytes = (key_bytes * (len(line_bytes) // len(key_bytes))) + key_bytes[:len(line_bytes) % len(key_bytes)]
+    
+    cipher_bytes = bytes([b1 ^ b2 for b1, b2 in zip(line_bytes, key_bytes)])
+  
+    return cipher_bytes.decode('utf-8', errors='ignore')
+
 
 
 def ru_vigenere_cipher(line: str, key: str, encrypt=True) -> str:
+    if key == "":
+        return ""
     key = key*(len(line)//len(key)) + key[:len(line) % len(key)]
     text = []
+    if len(key) < 2:
+        raise ValueError
     if encrypt:
         for i in range(len(line)):
             char = line[i]
@@ -73,14 +93,14 @@ def ru_vigenere_cipher(line: str, key: str, encrypt=True) -> str:
 # Английские шифры
 
 
-def eng_caesars_cipher(line: str, step: int, encrypt=True) -> str:
-    keys_numbers = {
-        1: "A",  2: "B",  3: "C",  4: "D",  5: "E",  6: "F",
-        7: "G",  8: "H",  9: "I", 10: "J", 11: "K", 12: "L",
-        13: "M", 14: "N", 15: "O", 16: "P", 17: "Q", 18: "R",
-        19: "S", 20: "T", 21: "U", 22: "V", 23: "W", 24: "X",
-        25: "Y", 26: "Z"
-    }
+def eng_caesars_cipher(line: str, key: int, encrypt=True) -> str:
+    keys_numbers = [
+        "A", "B", "C", "D", "E", "F",
+        "G", "H", "I", "J", "K", "L",
+        "M", "N", "O", "P", "Q", "R",
+        "S", "T", "U", "V", "W", "X",
+        "Y", "Z"
+    ]
     keys_letters = {
         "A": 1,  "B": 2,  "C": 3,  "D": 4,  "E": 5,  "F": 6,
         "G": 7,  "H": 8,  "I": 9,  "J": 10, "K": 11, "L": 12,
@@ -88,24 +108,39 @@ def eng_caesars_cipher(line: str, step: int, encrypt=True) -> str:
         "S": 19, "T": 20, "U": 21, "V": 22, "W": 23, "X": 24,
         "Y": 25, "Z": 26
     }
+
     ans = ""
-    step %= 26
+
     if encrypt == False:
-        step = -step
+        key = -key
+
+    if key < 0:
+        key = -(-key % 26)
+    else:
+        key %= 26
 
     for i in line:
-        if i.upper() in keys_numbers.values():
-            if i.isupper():
-                ans += keys_numbers[keys_letters[i]+step]
+        if i.upper() in keys_letters.keys():
+            if keys_letters[i.upper()]+key-1 > 26:
+                local_key = (keys_letters[i.upper()]+key-1) % 26
             else:
-                ans += keys_numbers[keys_letters[i.upper()]+step].lower()
+                local_key = keys_letters[i.upper()]+key-1
+
+            if i.isupper():
+                ans += keys_numbers[local_key]
+            else:
+                ans += keys_numbers[local_key].lower()
         else:
             ans += i
     return ans
 
 
 def eng_vigenere_cipher(line: str, key: str, encrypt=True) -> str:
+    if key == "":
+        return ""
     key = key*(len(line)//len(key)) + key[:len(line) % len(key)]
+    if len(key) < 2:
+        raise ValueError
     text = []
     if encrypt:
         for i in range(len(line)):
@@ -146,3 +181,4 @@ def base64_encoder(line: str, encrypt=True) -> str:
             return base64.b64decode(line.encode("ascii")).decode("ascii")
         except:
             return "Это не Base64"
+
