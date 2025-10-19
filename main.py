@@ -26,6 +26,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.grouping()
         self.connects()
 
+        self.change_theme()
+
     def connects(self):
         self.ciphers.triggered.connect(self.change_method)
 
@@ -48,8 +50,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.ui.decrypt_with_key.clicked.connect(self.decrypt_text_with_key)
         self.ui.decrypt_without_key.clicked.connect(
             self.decrypt_text_with_no_key)
-        
+
         self.ui.save_file.clicked.connect(self.save_into_file)
+
+        self.theme.triggered.connect(self.change_theme)
+
+        self.ui.info.triggered.connect(self.show_info)
 
     def grouping(self):
         self.ciphers = QActionGroup(self)
@@ -63,6 +69,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.lang.setExclusive(True)
         self.lang.addAction(self.ui.rus)
         self.lang.addAction(self.ui.eng)
+
+        self.theme = QActionGroup(self)
+        self.theme.setExclusive(True)
+        self.theme.addAction(self.ui.dark)
+        self.theme.addAction(self.ui.light)
 
     def get_text_from_file(self):
         file, _ = QFileDialog.getOpenFileName(
@@ -203,6 +214,78 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             dlg = CustomDialog("Выберите путь для файла")
             dlg.exec()
             return
+
+    def change_theme(self, action=0):
+        if action == self.ui.light:
+            self.setStyleSheet('''
+            QMainWindow{
+                background-color: #FFFFFF;
+                color: #000000;
+            }
+            QLineEdit{
+                background-color: #CDA3FF;
+                color: #000000;
+                border-radius: 10px;
+            }
+            QTextEdit{
+                background-color: #CDA3FF;
+                color: #000000;
+                border-radius: 10px;
+            }
+            QPushButton{
+                background-color: #6200EE;
+                color: #E7D9D9;
+            }
+            QMenuBar{
+                background-color: #353535;
+                color: #F3F2E3
+            }
+        ''')
+            self.ui.get_text.setStyleSheet("border: 1px solid black;")
+            self.ui.get_key.setStyleSheet("border: 1px solid black;")
+            self.ui.output_text.setStyleSheet("border: 1px solid black;")
+        else:
+            self.setStyleSheet('''
+            QMainWindow{
+                background-color: #121212;
+                color: #353535;
+            }
+            QLineEdit{
+                background-color: #353535;
+                color: #F3F2E3;
+                border-radius: 10px;
+            }
+            QTextEdit{
+                background-color: #353535;
+                color: #F3F2E3;
+                border-radius: 10px;
+            }
+            QPushButton{
+                background-color: #BB86FC;
+                color: #353535;
+            }
+            QMenuBar{
+                background-color: #353535;
+                color: #F3F2E3
+            }
+        ''')
+
+    def show_info(self):
+        dlg = CustomDialog('''
+                           Для вводы текста для зашифровки или расшифровки добавьте
+                           его в левое большое поле. Если выбран метод шифрования с
+                           ключом(шифр Цезаря выбран по умолчанию), то введите ключ
+                           в левое малое поле. После этого нажмите кнопку
+                           "Зашифровать" или "Расшифровать", после чего увидите ит-
+                           оговый текст в правом поле, из которого вы можете либо 
+                           его скопировать большой кнопкой "CTRL+C" или записать в
+                           файл с помощью кнопки "Сохранить в файл". Вы можете 
+                           выбрать другой шрифт в раскрывающемся меню слева сверху.
+                           На выбор есть шифры Цезаря, Виженера, Вернама и BASE64.
+                           Также можео изменить исходный язык данных(подменю "Язык")
+                           и изменить цветовую тему приложения(подменю тема).
+                           ''')
+        dlg.exec()
 
 
 class CustomDialog(QDialog):
