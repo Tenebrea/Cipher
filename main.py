@@ -1,6 +1,6 @@
 import sys
 
-from PyQt6.QtGui import QActionGroup
+from PyQt6.QtGui import QActionGroup, QIcon
 from PyQt6.QtWidgets import QApplication, QDialog, QFileDialog, QVBoxLayout, QLabel, QMainWindow
 from functions import base64_encoder, verman_cipher, ru_vigenere_cipher, ru_caesars_cipher, eng_caesars_cipher, eng_vigenere_cipher
 from MainWindow import Ui_MainWindow
@@ -27,6 +27,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.connects()
 
         self.change_theme()
+        
+        self.setWindowIcon(QIcon('icon.png'))
 
     def connects(self):
         self.ciphers.triggered.connect(self.change_method)
