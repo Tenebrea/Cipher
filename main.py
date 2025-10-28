@@ -82,9 +82,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self, "Open File", "", "All Files (*);;Text Files (*.txt)")
         try:
             with open(file, 'r', encoding='utf-8') as source:
-                self.text = source.readline()
+                self.text_file = source.readline()
             if file:
-                self.ui.get_text.setText(self.key)
+                self.ui.get_text.setText(self.text_file)
         except:
             return
 
